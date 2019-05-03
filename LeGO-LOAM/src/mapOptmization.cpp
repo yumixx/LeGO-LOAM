@@ -70,6 +70,8 @@ private:
     ros::Publisher pubIcpKeyFrames;
     ros::Publisher pubRecentKeyFrames;
 
+    ros::Publisher pubSupmaps; // Publisher for motion planning
+
     ros::Subscriber subLaserCloudCornerLast;
     ros::Subscriber subLaserCloudSurfLast;
     ros::Subscriber subOutlierCloudLast;
@@ -243,6 +245,8 @@ public:
         pubHistoryKeyFrames = nh.advertise<sensor_msgs::PointCloud2>("/history_cloud", 2);
         pubIcpKeyFrames = nh.advertise<sensor_msgs::PointCloud2>("/corrected_cloud", 2);
         pubRecentKeyFrames = nh.advertise<sensor_msgs::PointCloud2>("/recent_cloud", 2);
+
+        pubSupmaps = nh.advertise<sensor_msgs::PointCloud2>("/submaps",2);
 
         downSizeFilterCorner.setLeafSize(0.2, 0.2, 0.2);
         downSizeFilterSurf.setLeafSize(0.4, 0.4, 0.4);
@@ -1413,6 +1417,28 @@ public:
         laserCloudSurfFromMapDS->clear();   
     }
 
+    void publishSubmaps() {
+
+        pcl::PointCloud<PointType>::Ptr laserCloudAllFromMapDS(new pcl::PointCloud<PointType>());
+        *laserCloudAllFromMapDS += *laserCloudSurfFromMapDS;
+        *laserCloudAllFromMapDS += *laserCloudCornerFromMapDS;
+
+        pcl::PointCloud<PointType>::Ptr submap(new pcl::PointCloud<PointType>());
+        int lastKeyPoseIdx = cloudKeyPoses6D->points.size()-1;
+        int lastIdx = (int)cloudKeyPoses6D->points[lastKeyPoseIdx].intensity;
+        *submap += *transformPointCloud(cornerCloudKeyFrames[lastIdx], &cloudKeyPoses6D->points[lastIdx]);
+        *submap += *transformPointCloud(surfCloudKeyFrames[lastIdx], &cloudKeyPoses6D->points[lastIdx]);
+        *submap += *transformPointCloud(outlierCloudKeyFrames[lastIdx], &cloudKeyPoses6D->points[lastIdx]);
+        *submap += *laserCloudAllFromMapDS;
+
+        // TODO: down size filter or other filter need to be added?
+        sensor_msgs::PointCloud2 cloudMsgTemp;
+        pcl::toROSMsg(*submap, cloudMsgTemp);
+        cloudMsgTemp.header.stamp = ros::Time().fromSec(timeLaserOdometry);
+        cloudMsgTemp.header.frame_id = "/camera_init";
+        pubSupmaps.publish(cloudMsgTemp);
+    }
+
     void run(){
 
         if (newLaserCloudCornerLast  && std::abs(timeLaserCloudCornerLast  - timeLaserOdometry) < 0.005 &&
@@ -1444,6 +1470,8 @@ public:
                 publishTF();
 
                 publishKeyPosesAndFrames();
+
+                publishSubmaps();
 
                 clearCloud();
             }
