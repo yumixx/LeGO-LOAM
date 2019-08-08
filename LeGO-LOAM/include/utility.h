@@ -74,7 +74,7 @@ extern const int groundScanInd = 7;
 //extern const float ang_bottom = 24.8;
 //extern const int groundScanInd = 45;
 
-extern const bool loopClosureEnableFlag = false;
+extern const bool loopClosureEnableFlag = true;
 extern const double mappingProcessInterval = 0.3;
 
 extern const float scanPeriod = 0.1;
@@ -99,9 +99,9 @@ extern const float surfThreshold = 0.1;
 extern const float nearestFeatureSearchSqDist = 25;
 
 extern const float surroundingKeyframeSearchRadius = 50.0;
-extern const int   surroundingKeyframeSearchNum = 5;
+extern const int   surroundingKeyframeSearchNum = 50;
 
-extern const float historyKeyframeSearchRadius = 5.0;
+extern const float historyKeyframeSearchRadius = 7.0;
 extern const int   historyKeyframeSearchNum = 25;
 extern const float historyKeyframeFitnessScore = 0.3;
 

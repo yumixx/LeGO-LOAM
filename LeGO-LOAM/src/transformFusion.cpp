@@ -47,6 +47,9 @@ private:
     tf::StampedTransform laserOdometryTrans2;
     tf::TransformBroadcaster tfBroadcaster2;
 
+//    nav_msgs::Odometry laserOdometryFinal;
+//    ros::Publisher pubLaserOdometryFinal;
+
     tf::StampedTransform map_2_camera_init_Trans;
     tf::TransformBroadcaster tfBroadcasterMap2CameraInit;
 
@@ -79,7 +82,12 @@ public:
         map_2_camera_init_Trans.child_frame_id_ = "/camera_init";
 
         camera_2_base_link_Trans.frame_id_ = "/camera";
-        camera_2_base_link_Trans.child_frame_id_ = "/base_link";
+//        camera_2_base_link_Trans.child_frame_id_ = "/base_link";
+        camera_2_base_link_Trans.child_frame_id_ = "/sensor_link";
+
+//        pubLaserOdometryFinal = nh.advertise<nav_msgs::Odometry>("/map_to_base_link", 5);
+//        laserOdometryFinal.header.frame_id = "/map";
+//        laserOdometryFinal.child_frame_id = "/base_link";
 
         for (int i = 0; i < 6; ++i)
         {

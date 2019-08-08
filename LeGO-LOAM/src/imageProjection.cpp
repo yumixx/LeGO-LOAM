@@ -157,6 +157,15 @@ public:
 
         cloudHeader = laserCloudMsg->header;
         pcl::fromROSMsg(*laserCloudMsg, *laserCloudIn);
+
+        // Transform point cloud
+//        pcl::PointCloud<PointType>::Ptr laserCloudTemp (new pcl::PointCloud<PointType>());
+//        Eigen::Matrix4f transform1 = Eigen::Matrix4f::Identity();
+//        transform1(0,3) = 0;
+//        transform1(1,3) = 0;
+//        transform1(2,3) = 0.338;
+//        pcl::transformPointCloud(*laserCloudIn, *laserCloudTemp, transform1);
+//        laserCloudIn = laserCloudTemp;
     }
     
     void cloudHandler(const sensor_msgs::PointCloud2ConstPtr& laserCloudMsg){
@@ -415,39 +424,45 @@ public:
 
         pcl::toROSMsg(*outlierCloud, laserCloudTemp);
         laserCloudTemp.header.stamp = cloudHeader.stamp;
-        laserCloudTemp.header.frame_id = "base_link";
+//        laserCloudTemp.header.frame_id = "base_link";
+        laserCloudTemp.header.frame_id = "sensor_link";
         pubOutlierCloud.publish(laserCloudTemp);
 
         pcl::toROSMsg(*segmentedCloud, laserCloudTemp);
         laserCloudTemp.header.stamp = cloudHeader.stamp;
-        laserCloudTemp.header.frame_id = "base_link";
+//        laserCloudTemp.header.frame_id = "base_link";
+        laserCloudTemp.header.frame_id = "sensor_link";
         pubSegmentedCloud.publish(laserCloudTemp);
 
         if (pubFullCloud.getNumSubscribers() != 0){
             pcl::toROSMsg(*fullCloud, laserCloudTemp);
             laserCloudTemp.header.stamp = cloudHeader.stamp;
-            laserCloudTemp.header.frame_id = "base_link";
+//            laserCloudTemp.header.frame_id = "base_link";
+            laserCloudTemp.header.frame_id = "sensor_link";
             pubFullCloud.publish(laserCloudTemp);
         }
 
         if (pubGroundCloud.getNumSubscribers() != 0){
             pcl::toROSMsg(*groundCloud, laserCloudTemp);
             laserCloudTemp.header.stamp = cloudHeader.stamp;
-            laserCloudTemp.header.frame_id = "base_link";
+//            laserCloudTemp.header.frame_id = "base_link";
+            laserCloudTemp.header.frame_id = "sensor_link";
             pubGroundCloud.publish(laserCloudTemp);
         }
 
         if (pubSegmentedCloudPure.getNumSubscribers() != 0){
             pcl::toROSMsg(*segmentedCloudPure, laserCloudTemp);
             laserCloudTemp.header.stamp = cloudHeader.stamp;
-            laserCloudTemp.header.frame_id = "base_link";
+//            laserCloudTemp.header.frame_id = "base_link";
+            laserCloudTemp.header.frame_id = "sensor_link";
             pubSegmentedCloudPure.publish(laserCloudTemp);
         }
 
         if (pubFullInfoCloud.getNumSubscribers() != 0){
             pcl::toROSMsg(*fullInfoCloud, laserCloudTemp);
             laserCloudTemp.header.stamp = cloudHeader.stamp;
-            laserCloudTemp.header.frame_id = "base_link";
+//            laserCloudTemp.header.frame_id = "base_link";
+            laserCloudTemp.header.frame_id = "sensor_link";
             pubFullInfoCloud.publish(laserCloudTemp);
         }
     }
